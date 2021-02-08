@@ -1,18 +1,20 @@
 import React, { Component } from "react";
 import wheel from './wheel.svg';
 import ReactPlayer from 'react-player/file'
-import api_url from "./Config"
+import { api_url, static_url } from "./Config"
 
 class TelemetryHelper extends Component {
   constructor() {
     super();
-    this.state = { available_timestamps: [], timestamp: "2021-01-17-11_15_03" }
+    this.state = { available_timestamps: [], timestamp: "" }
   }
 
   async componentDidMount() {
     await fetch(`${api_url}/telemetry`)
       .then(res => res.json())
       .then(json => this.setState({ available_timestamps: json.data }));
+
+    this.setState({ timestamp: this.state.available_timestamps[0] })
   }
 
   render() {
@@ -92,7 +94,7 @@ class Telemetry extends Component {
 
         {/* video */}
         <ReactPlayer
-          url={`static_files/laps-${this.timestamp}.mp4`}
+          url={`${static_url}/laps-${this.timestamp}.mp4`}
           controls={true}
           playsinline={true}
           progressInterval={50}
