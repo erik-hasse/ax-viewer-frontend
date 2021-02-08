@@ -60,7 +60,7 @@ class Telemetry extends Component {
   constructor({timestamp}) {
     super();
     this.timestamp = timestamp;
-    this.state = { telemetry: {}, coords: {'latitude': [], 'longitude': []} };
+    this.state = { telemetry: {}, coords: {'latitude': [], 'longitude': []}, fit_plot: '' };
     this.videoCallback = async (progress) => {
       const url = (
         `${api_url}/telemetry/${this.timestamp}/`
@@ -76,6 +76,10 @@ class Telemetry extends Component {
     await fetch(`${api_url}/map/${this.timestamp}`)
       .then(res => res.json())
       .then(json => this.setState({ coords: json }));
+
+    await fetch(`${api_url}/fit_plot/${this.timestamp}`)
+      .then(res => res.json())
+      .then(json => this.setState({ fit_plot: json['img'] }))
   }
 
   render() {
@@ -83,11 +87,12 @@ class Telemetry extends Component {
       return `${e},${this.state.coords.latitude[i]}`
     }).join(" ")
 
+    const image = this.state.fit_plot.replace('-', '+').replace('_', '/')
     return (
       <div className="Telemetry">
         <header className="App-header">
           AX Viewer<br/>
-          <a href={`static_files/plot-${this.timestamp}.png`} target='_blank' rel="noreferrer">
+          <a href={`data:image/png;base64,${image}`} target='_blank' rel="noreferrer">
             Fit plot
           </a>
         </header>
